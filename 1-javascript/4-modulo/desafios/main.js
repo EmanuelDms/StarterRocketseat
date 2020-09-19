@@ -3,13 +3,28 @@
 function checaIdade(idade) {
   return new Promise(function (resolve, reject) {
     setTimeout(function () {
-      if (idade >= 18) {
-        resolve();
-      } else {
-        reject();
-      }
+      (idade >= 18) ? resolve() : reject();
     }, 2000)
   });
+}
+
+function renderLi(data, ul) {
+  var li = document.createElement('li');
+  var textFork = data.fork ? ' (Fork)' : '';
+  var text = document.createTextNode(data.name + textFork);
+  li.appendChild(text);
+  ul.appendChild(li);
+}
+
+function cleanUlHTML() {
+  ul.innerHTML = '';
+}
+
+function errorsResponse(error) {
+  if (error.response.status == 404) {
+    return alert('Usuário inexistente');
+  }
+  return console.warn('Erro na requisição');
 }
 
 checaIdade(20)
@@ -24,45 +39,39 @@ checaIdade(20)
 
 var ul = document.querySelector('ul');
 
-// Button
-document.querySelector('#listDataUser').onclick = () => {
-  var userName = document.querySelector('input[name=user]');
+// On Button Click
+document.querySelector('#listDataUser')
+  .onclick = () => {
+    // Get name of username
+    let userName = document.querySelector('input[name=user]');
 
-  // Create a li
-  let liLoading = document.createElement('li');
+    // Create a li
+    let liLoading = document.createElement('li');
 
-  // Create and add a text to li element
-  let text = document.createTextNode('Carregando...');
-  liLoading.appendChild(text);
+    // Create and add a text to li element
+    let text = document.createTextNode('Carregando...');
+    liLoading.appendChild(text);
 
-  // Add a request interceptor
-  axios.interceptors.request.use(function (config) {
-    // Add li into ul before request is sents
-    ul.appendChild(liLoading);
-    return config;
-  }, function (error) {
-    // Do something with request error
-    return Promise.reject(error);
-  });
+    // Add a request interceptor
+    axios.interceptors.request.use(function (config) {
+      // Add li into ul before request is sents
+      ul.appendChild(liLoading);
+      return config;
+    }, function (error) {
+      // Do something with request error
+      return Promise.reject(error);
+    });
 
-  ul.innerHTML = '';
-  axios.get(`https://api.github.com/users/${userName.value}/repos`)
-    .then(function (response) {
-      ul.innerHTML = '';
-      response.data.forEach(element => {
-        var li = document.createElement('li');
-        var textFork = element.fork ? ' (Fork)' : '';
-        var text = document.createTextNode(element.name + textFork);
-        li.appendChild(text);
-        ul.appendChild(li);
+    cleanUlHTML();
+    axios.get(`https://api.github.com/users/${userName.value}/repos`)
+      .then(function (response) {
+        cleanUlHTML();
+        response.data.forEach(element => {
+          renderLi(element, ul);
+        })
       })
-    })
-    .catch(function (error) {
-      ul.innerHTML = '';
-      if (error.response.status == 404) {
-        alert('Usuário inexistente');
-      } else {
-        console.warn('Erro na requisição');
-      }
-    })
-}
+      .catch(function (error) {
+        cleanUlHTML();
+        errorsResponse(error);
+      })
+  }

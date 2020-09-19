@@ -32,8 +32,6 @@ function renderToDos() {
   }
 }
 
-renderToDos();
-
 function addToDo() {
   var todoText = inputElement.value;
 
@@ -42,8 +40,6 @@ function addToDo() {
   renderToDos();
   saveToStorage();
 }
-
-buttonElement.onclick = addToDo;
 
 function deleteToDo(pos) {
   // Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.
@@ -59,3 +55,7 @@ function saveToStorage() {
   // JSON é semelhante à um objeto, só que com Strings
   localStorage.setItem('list_todos', JSON.stringify(todos))
 }
+
+renderToDos();
+
+buttonElement.onclick = addToDo;

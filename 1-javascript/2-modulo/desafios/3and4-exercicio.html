@@ -13,47 +13,38 @@
   <!-- 3º Preencha uma lista (<ul>) no HTML com o vetor nome -->
   <!-- 4º Através do input e button, inserir um novo item na lista e, por consequência, ser exibido na lista não-ordenada. Apagar também o conteúdo do input após a inserção. -->
   <script>
-    var nome = ["Diego", "Gabriel", "Lucas"];
+    // var nome = ['Diego', "Mayke", 'João']
     var body = document.querySelector('body');
     var btn = document.querySelector('#addLi');
     var ul = document.createElement('ul');
-    body.appendChild(ul);
+    var nome = JSON.parse(localStorage.getItem('list_nomes')) || [];
 
-    window.onload = () => {
-      addLiOnUl();
-    };
-
-    function addLiOnUl() {
-      let LiS = document.querySelectorAll('ul li');
-      let LiS_Size = LiS.length;
-      let nomeSize = nome.length - 1;
-
-      // Faz essa verificação para rodar o array inicialmente
-      if (LiS_Size == 0) {
-        var i = 0;
-        while (i <= nomeSize) {
-          var li = document.createElement('li');
-          var text = document.createTextNode(nome[i]);
-          li.appendChild(text);
-          ul.appendChild(li);
-          i++;
-        }
-      } else {
-        var li = document.createElement('li');
-        var text = document.createTextNode(nome[nomeSize]);
+    function renderLiOnUl() {
+      ul.innerHTML = '';
+      nome.forEach(element => {
+        let li = document.createElement('li');
+        let text = document.createTextNode(element);
         li.appendChild(text);
         ul.appendChild(li);
-      }
+      });
     }
 
-    btn.onclick = () => {
-      var inputNome = document.querySelector('input[name="nome"]');
+    function addLiToList() {
+      let inputNome = document.querySelector('input[name="nome"]');
+
       nome.push(inputNome.value);
       inputNome.value = '';
-      addLiOnUl();
-
+      renderLiOnUl();
+      saveToStorage();
     }
 
+    function saveToStorage() {
+      localStorage.setItem('list_nomes', JSON.stringify(nome));
+    }
+
+    body.appendChild(ul);
+    renderLiOnUl();
+    btn.onclick = addLiToList;
   </script>
 </body>
 
